@@ -1,0 +1,1787 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>РаботаКостанай | Поиск работы и сотрудников</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            /* Цветовая схема в спокойных тонах */
+            --primary-color: #4A6FA5;
+            --primary-light: #E8EDF5;
+            --secondary-color: #6B8C9E;
+            --accent-color: #8BB8C1;
+            --text-color: #333333;
+            --text-light: #FFFFFF;
+            --bg-color: #F5F7FA;
+            --card-bg: #FFFFFF;
+            --border-color: #E0E4E9;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            
+            /* Анимации */
+            --transition: all 0.3s ease;
+        }
+
+        /* Темная тема */
+        .dark-theme {
+            --primary-color: #5B8CFF;
+            --primary-light: #1A1A40;
+            --secondary-color: #7A9CC6;
+            --accent-color: #8BB8C1;
+            --text-color: #E0E0E0;
+            --text-light: #FFFFFF;
+            --bg-color: #121212;
+            --card-bg: #1E1E1E;
+            --border-color: #3D3D3D;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Базовые стили */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            transition: var(--transition);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 600;
+            color: var(--text-color);
+            margin-top: 0;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px 0;
+            flex: 1;
+        }
+
+        /* Шапка */
+        header {
+            background-color: var(--card-bg);
+            padding: 1rem 0;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary-color);
+        }
+
+        .logo i {
+            font-size: 1.3rem;
+        }
+
+        /* Переключатель пользователя */
+        .user-switch {
+            display: flex;
+            background-color: var(--primary-light);
+            border-radius: 8px;
+            padding: 4px;
+            margin-right: 15px;
+        }
+
+        .user-switch-btn {
+            padding: 8px 16px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.9rem;
+            border-radius: 6px;
+            transition: var(--transition);
+        }
+
+        .user-switch-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Кнопки */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.7rem 1.3rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            font-size: 0.95rem;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary-light);
+        }
+
+        /* Карточки вакансий */
+        .vacancies-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.2rem;
+            margin-top: 1.5rem;
+        }
+
+        .vacancy-card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 1.3rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .vacancy-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .vacancy-title {
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            margin-bottom: 0.4rem;
+        }
+
+        .company {
+            font-weight: 500;
+            color: var(--secondary-color);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.95rem;
+        }
+
+        .vacancy-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-bottom: 0.8rem;
+            font-size: 0.85rem;
+        }
+
+        .vacancy-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .salary {
+            font-weight: 600;
+            color: var(--accent-color);
+        }
+
+        .vacancy-description {
+            margin-bottom: 1.2rem;
+            line-height: 1.5;
+            font-size: 0.9rem;
+            flex-grow: 1;
+        }
+
+        .vacancy-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .vacancy-date {
+            font-size: 0.8rem;
+            color: var(--secondary-color);
+        }
+
+        /* Детали вакансии */
+        .vacancy-details {
+            display: none;
+            padding: 1.5rem;
+            background-color: var(--primary-light);
+            border-radius: 8px;
+            margin-top: 1rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .vacancy-details.show {
+            display: block;
+        }
+
+        .details-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .details-section h4 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .details-list {
+            padding-left: 1.2rem;
+        }
+
+        .details-list li {
+            margin-bottom: 0.3rem;
+        }
+
+        .toggle-details {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 0.5rem;
+            padding: 0;
+        }
+
+        .toggle-details i {
+            transition: var(--transition);
+        }
+
+        .toggle-details.active i {
+            transform: rotate(180deg);
+        }
+
+        /* Форма поиска */
+        .search-section {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .search-form {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .form-control {
+            flex: 1;
+            min-width: 200px;
+            padding: 0.7rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(74, 111, 165, 0.2);
+        }
+
+        /* Модальные окна */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            margin: 5% auto;
+            padding: 1.8rem;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .modal-close {
+            float: right;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: var(--primary-color);
+        }
+
+        .form-group {
+            margin-bottom: 1.3rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-color);
+            font-size: 0.9rem;
+        }
+
+        /* Подвал */
+        footer {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            padding: 2rem 0;
+            margin-top: 3rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .footer-section {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .footer-section h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .footer-section p, .footer-section a {
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+            margin-bottom: 0.5rem;
+            display: block;
+            text-decoration: none;
+        }
+
+        .footer-section a:hover {
+            color: var(--primary-color);
+        }
+
+        .copyright {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.85rem;
+            color: var(--secondary-color);
+        }
+
+        /* Переключатель темы */
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: var(--transition);
+            margin-left: 1rem;
+        }
+
+        /* Адаптив */
+        @media (max-width: 768px) {
+            .vacancies-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-form {
+                flex-direction: column;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+            
+            .header-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <i class="fas fa-briefcase"></i>
+                <span>РаботаКостанай</span>
+            </div>
+            <div class="header-actions">
+                <div class="user-switch">
+                    <button id="jobSeekerBtn" class="user-switch-btn active">Соискатель</button>
+                    <button id="employerBtn" class="user-switch-btn">Работодатель</button>
+                </div>
+                <button id="loginBtn" class="btn btn-outline">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Вход
+                </button>
+                <button id="registerBtn" class="btn btn-primary">
+                    <i class="fas fa-user-plus"></i>
+                    Регистрация
+                </button>
+                <button id="themeToggle" class="theme-toggle" title="Переключить тему">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Поиск вакансий -->
+        <section class="search-section" id="jobSearchSection">
+            <h1>Найдите работу в Костанае</h1>
+            <form id="searchForm" class="search-form">
+                <input type="text" id="searchInput" class="form-control" placeholder="Должность, компания или ключевые слова">
+                <select id="categoryFilter" class="form-control">
+                    <option value="">Все категории</option>
+                    <option value="it">IT и технологии</option>
+                    <option value="sales">Продажи</option>
+                    <option value="finance">Финансы и бухгалтерия</option>
+                    <option value="education">Образование</option>
+                    <option value="medicine">Медицина</option>
+                    <option value="construction">Строительство</option>
+                    <option value="transport">Транспорт и логистика</option>
+                    <option value="other">Другие</option>
+                </select>
+                <select id="experienceFilter" class="form-control">
+                    <option value="any">Любой опыт</option>
+                    <option value="noexp">Без опыта</option>
+                    <option value="1-3">1-3 года</option>
+                    <option value="3+">Более 3 лет</option>
+                </select>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-search"></i>
+                    Найти
+                </button>
+            </form>
+        </section>
+
+        <!-- Форма для работодателей -->
+        <section class="search-section" id="employerSection" style="display: none;">
+            <h1>Разместите вакансию</h1>
+            <form id="employerForm" class="search-form">
+                <input type="text" id="jobTitle" class="form-control" placeholder="Название вакансии" required>
+                <textarea id="jobDescription" class="form-control" rows="3" placeholder="Описание вакансии" required></textarea>
+                <input type="text" id="jobSalary" class="form-control" placeholder="Зарплата (например: от 250 000 ₸)">
+                <select id="jobCategory" class="form-control" required>
+                    <option value="">Выберите категорию</option>
+                    <option value="it">IT и технологии</option>
+                    <option value="sales">Продажи</option>
+                    <option value="finance">Финансы и бухгалтерия</option>
+                    <option value="education">Образование</option>
+                    <option value="medicine">Медицина</option>
+                    <option value="construction">Строительство</option>
+                    <option value="transport">Транспорт и логистика</option>
+                    <option value="other">Другие</option>
+                </select>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i>
+                    Опубликовать
+                </button>
+            </form>
+        </section>
+
+        <!-- Все вакансии -->
+        <section id="vacanciesSection">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h2>Актуальные вакансии</h2>
+                <div id="vacancyCount" style="font-size: 0.9rem; color: var(--secondary-color);">Найдено 10 вакансий</div>
+            </div>
+            <div class="vacancies-container" id="vacanciesContainer">
+                <!-- Вакансии будут загружены здесь -->
+            </div>
+        </section>
+
+        <!-- Создание резюме -->
+        <section class="search-section" id="resumeSection">
+            <h2>Создайте резюме</h2>
+            <p>Привлекайте работодателей профессиональным резюме</p>
+            <div class="resume-actions">
+                <button id="createResumeBtn" class="btn btn-primary">
+                    <i class="fas fa-file-alt"></i>
+                    Создать резюме
+                </button>
+                <button id="exportResumeBtn" class="btn btn-outline" style="display: none;">
+                    <i class="fas fa-file-pdf"></i>
+                    Экспорт в PDF
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>РаботаКостанай</h3>
+                    <p>Сервис поиска работы и сотрудников в городе Костанай</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Контакты</h3>
+                    <p><i class="fas fa-envelope"></i> info@rabotakostanay.kz</p>
+                    <p><i class="fas fa-phone"></i> +7 (7142) 123-456</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Полезные ссылки</h3>
+                    <a href="#"><i class="fas fa-question-circle"></i> Помощь</a>
+                    <a href="#"><i class="fas fa-shield-alt"></i> Безопасность</a>
+                    <a href="#"><i class="fas fa-file-alt"></i> Условия использования</a>
+                </div>
+            </div>
+            <div class="copyright">
+                &copy; 2023 РаботаКостанай. Все права защищены.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Модальные окна -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" id="closeLoginModal">&times;</button>
+            <h2>Вход в систему</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword" class="form-label">Пароль</label>
+                    <input type="password" class="form-control" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Войти
+                </button>
+            </form>
+            <div style="text-align: center; margin-top: 1rem;">
+                <p>Ещё нет аккаунта? <a href="#" id="switchToRegister" style="color: var(--primary-color);">Зарегистрируйтесь</a></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" id="closeRegisterModal">&times;</button>
+            <h2>Регистрация</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="registerName" class="form-label">ФИО</label>
+                    <input type="text" class="form-control" id="registerName" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="registerEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPhone" class="form-label">Телефон</label>
+                    <input type="tel" class="form-control" id="registerPhone">
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword" class="form-label">Пароль</label>
+                    <input type="password" class="form-control" id="registerPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerConfirmPassword" class="form-label">Подтвердите пароль</label>
+                    <input type="password" class="form-control" id="registerConfirmPassword" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Вы регистрируетесь как:</label>
+                    <div style="display: flex; gap: 10px;">
+                        <label style="display: flex; align-items: center; gap: 5px;">
+                            <input type="radio" name="userType" value="jobSeeker" checked> Соискатель
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 5px;">
+                            <input type="radio" name="userType" value="employer"> Работодатель
+                        </label>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    <i class="fas fa-user-plus"></i>
+                    Зарегистрироваться
+                </button>
+            </form>
+            <div style="text-align: center; margin-top: 1rem;">
+                <p>Уже есть аккаунт? <a href="#" id="switchToLogin" style="color: var(--primary-color);">Войдите</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно создания резюме -->
+    <div id="resumeModal" class="modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <button class="modal-close" id="closeResumeModal">&times;</button>
+            <h2>Создание резюме</h2>
+            
+            <form id="resumeForm">
+                <div class="form-group">
+                    <label for="resumeName" class="form-label">ФИО</label>
+                    <input type="text" class="form-control" id="resumeName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="resumeTitle" class="form-label">Желаемая должность</label>
+                    <input type="text" class="form-control" id="resumeTitle" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="resumePhone" class="form-label">Телефон</label>
+                    <input type="tel" class="form-control" id="resumePhone">
+                </div>
+                
+                <div class="form-group">
+                    <label for="resumeEmail" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="resumeEmail">
+                </div>
+                
+                <div class="form-group">
+                    <label for="resumeCity" class="form-label">Город</label>
+                    <input type="text" class="form-control" id="resumeCity" value="Костанай">
+                </div>
+                
+                <div class="form-group">
+                    <label for="resumeAbout" class="form-label">О себе</label>
+                    <textarea class="form-control" id="resumeAbout" rows="4"></textarea>
+                </div>
+                
+                <h3>Опыт работы</h3>
+                <div id="experienceItems">
+                    <div class="form-group">
+                        <label class="form-label">Должность</label>
+                        <input type="text" class="form-control" name="expPosition[]">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Компания</label>
+                        <input type="text" class="form-control" name="expCompany[]">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Период работы</label>
+                        <input type="text" class="form-control" name="expPeriod[]" placeholder="Пример: 2018-2022">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Обязанности и достижения</label>
+                        <textarea class="form-control" name="expDescription[]" rows="3"></textarea>
+                    </div>
+                </div>
+                <button type="button" id="addExperience" class="btn btn-outline">
+                    <i class="fas fa-plus"></i>
+                    Добавить место работы
+                </button>
+                
+                <h3 style="margin-top: 2rem;">Образование</h3>
+                <div class="form-group">
+                    <label class="form-label">Учебное заведение</label>
+                    <input type="text" class="form-control" id="educationInstitution">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Специальность</label>
+                    <input type="text" class="form-control" id="educationSpecialty">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Год окончания</label>
+                    <input type="text" class="form-control" id="educationYear">
+                </div>
+                
+                <h3 style="margin-top: 2rem;">Навыки</h3>
+                <div class="form-group">
+                    <label class="form-label">Профессиональные навыки</label>
+                    <textarea class="form-control" id="resumeSkills" rows="4" placeholder="Перечислите через запятую"></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="margin-top: 1rem;">
+                    <i class="fas fa-save"></i>
+                    Сохранить резюме
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Инициализация jsPDF
+        const { jsPDF } = window.jspdf;
+
+        // Текущий пользователь
+        let currentUser = null;
+        let currentResume = {
+            personal: {},
+            experience: [],
+            education: {},
+            skills: ""
+        };
+        let isEmployer = false;
+
+        // Данные вакансий
+        const vacanciesData = [
+            {
+                id: 1,
+                title: "Frontend разработчик (React)",
+                company: "IT Solutions Kazakhstan",
+                salary: "от 350 000 ₸",
+                salaryNum: 350000,
+                location: "Костанай",
+                type: "Полная занятость",
+                experience: "1-3 года",
+                category: "it",
+                description: "Разработка пользовательских интерфейсов на React.js. Оптимизация производительности приложений.",
+                responsibilities: [
+                    "Разработка компонентов на React",
+                    "Оптимизация производительности",
+                    "Взаимодействие с backend-разработчиками",
+                    "Участие в код-ревью"
+                ],
+                requirements: [
+                    "Опыт работы с React от 1 года",
+                    "Знание JavaScript (ES6+)",
+                    "Опыт работы с Redux/MobX",
+                    "Знание HTML5/CSS3"
+                ],
+                conditions: [
+                    "Гибкий график работы",
+                    "Возможность удаленной работы",
+                    "Медицинская страховка",
+                    "Корпоративное обучение"
+                ],
+                skills: ["React", "JavaScript", "HTML", "CSS", "Redux"],
+                date: "Сегодня",
+                views: 124,
+                status: "approved"
+            },
+            {
+                id: 2,
+                title: "Менеджер по продажам",
+                company: "ТОО 'Торговый Дом'",
+                salary: "от 250 000 ₸ + бонусы",
+                salaryNum: 250000,
+                location: "Костанай",
+                type: "Полная занятость",
+                experience: "без опыта",
+                category: "sales",
+                description: "Привлечение новых клиентов. Проведение переговоров и презентаций.",
+                responsibilities: [
+                    "Поиск и привлечение клиентов",
+                    "Проведение переговоров",
+                    "Заключение договоров",
+                    "Ведение клиентской базы"
+                ],
+                requirements: [
+                    "Коммуникабельность",
+                    "Грамотная речь",
+                    "Целеустремленность",
+                    "Опыт работы приветствуется"
+                ],
+                conditions: [
+                    "Обучение за счет компании",
+                    "Гибкий график",
+                    "Бонусы за перевыполнение плана",
+                    "Карьерный рост"
+                ],
+                skills: ["Продажи", "Коммуникация", "Переговоры"],
+                date: "Вчера",
+                views: 89,
+                status: "approved"
+            },
+            {
+                id: 3,
+                title: "Бухгалтер",
+                company: "АО 'Финансы Плюс'",
+                salary: "от 280 000 ₸",
+                salaryNum: 280000,
+                location: "Костанай",
+                type: "Полная занятость",
+                experience: "3+ года",
+                category: "finance",
+                description: "Ведение бухгалтерского и налогового учета. Формирование отчетности.",
+                responsibilities: [
+                    "Ведение бухгалтерского учета",
+                    "Формирование отчетности",
+                    "Работа с первичной документацией",
+                    "Взаимодействие с госорганами"
+                ],
+                requirements: [
+                    "Высшее экономическое образование",
+                    "Опыт работы от 3 лет",
+                    "Знание 1С:Бухгалтерия",
+                    "Знание налогового законодательства"
+                ],
+                conditions: [
+                    "Официальное трудоустройство",
+                    "Стабильная зарплата",
+                    "Оформление по ТК РК",
+                    "Дружный коллектив"
+                ],
+                skills: ["1С", "Бухучет", "Налоги", "Отчетность"],
+                date: "2 дня назад",
+                views: 67,
+                status: "approved"
+            },
+            {
+                id: 4,
+                title: "Водитель категории С",
+                company: "Транспортная компания 'Экспресс'",
+                salary: "от 300 000 ₸",
+                salaryNum: 300000,
+                location: "Костанай",
+                type: "Полная занятость",
+                experience: "1-3 года",
+                category: "transport",
+                description: "Перевозка грузов по городу и области. График работы 5/2.",
+                responsibilities: [
+                    "Перевозка грузов по маршруту",
+                    "Контроль состояния автомобиля",
+                    "Ведение путевой документации",
+                    "Соблюдение графика доставок"
+                ],
+                requirements: [
+                    "Водительское удостоверение категории С",
+                    "Опыт работы от 1 года",
+                    "Знание ПДД",
+                    "Отсутствие вредных привычек"
+                ],
+                conditions: [
+                    "Официальное трудоустройство",
+                    "Стабильный график",
+                    "Социальный пакет",
+                    "Современный автопарк"
+                ],
+                skills: ["Водительское удостоверение", "Категория С", "Грузоперевозки"],
+                date: "3 дня назад",
+                views: 56,
+                status: "approved"
+            },
+            {
+                id: 5,
+                title: "Учитель английского языка",
+                company: "Языковая школа 'Лингва'",
+                salary: "от 200 000 ₸",
+                salaryNum: 200000,
+                location: "Костанай",
+                type: "Частичная занятость",
+                experience: "без опыта",
+                category: "education",
+                description: "Проведение занятий по английскому языку для детей и взрослых.",
+                responsibilities: [
+                    "Проведение групповых и индивидуальных занятий",
+                    "Разработка учебных программ",
+                    "Контроль успеваемости студентов",
+                    "Подготовка к экзаменам"
+                ],
+                requirements: [
+                    "Высшее образование (лингвистическое или педагогическое)",
+                    "Уровень английского не ниже Advanced",
+                    "Опыт преподавания приветствуется",
+                    "Коммуникабельность"
+                ],
+                conditions: [
+                    "Гибкий график",
+                    "Возможность совмещения",
+                    "Корпоративное обучение",
+                    "Дружный коллектив"
+                ],
+                skills: ["Английский язык", "Преподавание", "Образование"],
+                date: "Неделю назад",
+                views: 42,
+                status: "pending"
+            },
+            {
+                id: 6,
+                title: "Повар",
+                company: "Кафе 'Уют'",
+                salary: "от 220 000 ₸",
+                salaryNum: 220000,
+                location: "Костанай",
+                type: "Полная занятость",
+                experience: "без опыта",
+                category: "other",
+                description: "Приготовление блюд по меню. Работа на кухне.",
+                responsibilities: [
+                    "Приготовление блюд по меню",
+                    "Соблюдение рецептур",
+                    "Контроль качества продуктов",
+                    "Поддержание чистоты на рабочем месте"
+                ],
+                requirements: [
+                    "Знание технологии приготовления блюд",
+                    "Опыт работы приветствуется",
+                    "Ответственность",
+                    "Аккуратность"
+                ],
+                conditions: [
+                    "Официальное трудоустройство",
+                    "График 2/2",
+                    "Бесплатное питание",
+                    "Возможность карьерного роста"
+                ],
+                skills: ["Кулинария", "Работа на кухне", "Соблюдение рецептур"],
+                date: "Неделю назад",
+                views: 29,
+                status: "approved"
+            },
+            {
+                id: 7,
+                title: "Маркетолог",
+                company: "Рекламное агентство 'Пиксель'",
+                salary: "от 320 000 ₸",
+                salaryNum: 320000,
+                location: "Костанай",
+                type: "Полная занятость",
+                experience: "1-3 года",
+                category: "sales",
+                description: "Разработка и реализация маркетинговых стратегий.",
+                responsibilities: [
+                    "Анализ рынка и конкурентов",
+                    "Разработка маркетинговых стратегий",
+                    "Проведение рекламных кампаний",
+                    "Анализ эффективности рекламы"
+                ],
+                requirements: [
+                    "Опыт работы в маркетинге от 1 года",
+                    "Знание digital-маркетинга",
+                    "Аналитическое мышление",
+                    "Креативность"
+                ],
+                conditions: [
+                    "Офис в центре города",
+                    "Гибкий график",
+                    "Корпоративные тренинги",
+                    "Бонусы за эффективность"
+                ],
+                skills: ["Маркетинг", "Digital", "Аналитика", "SMM"],
+                date: "Сегодня",
+                views: 78,
+                status: "approved"
+            },
+            {
+                id: 8,
+                title: "Врач-терапевт",
+                company: "Городская поликлиника №1",
+                salary: "от 400 000 ₸",
+                salaryNum: 400000,
+                location: "Костанай",
+                type: "Полная занятость",
+                experience: "3+ года",
+                category: "medicine",
+                description: "Прием пациентов, диагностика и лечение заболеваний.",
+                responsibilities: [
+                    "Прием пациентов",
+                    "Диагностика заболеваний",
+                    "Назначение лечения",
+                    "Ведение медицинской документации"
+                ],
+                requirements: [
+                    "Высшее медицинское образование",
+                    "Действующий сертификат",
+                    "Опыт работы от 3 лет",
+                    "Коммуникабельность"
+                ],
+                conditions: [
+                    "Официальное трудоустройство",
+                    "Социальный пакет",
+                    "График 5/2",
+                    "Возможность повышения квалификации"
+                ],
+                skills: ["Терапия", "Диагностика", "Медицина"],
+                date: "Вчера",
+                views: 65,
+                status: "approved"
+            },
+            {
+                id: 9,
+                title: "Инженер-строитель",
+                company: "Строительная компания 'Байтерек'",
+                salary: "от 380 000 ₸",
+                salaryNum: 380000,
+                location: "Костанай",
+                type: "Полная занятость",
+                experience: "3+ года",
+                category: "construction",
+                description: "Контроль за строительными работами, ведение документации.",
+                responsibilities: [
+                    "Контроль качества строительных работ",
+                    "Ведение исполнительной документации",
+                    "Взаимодействие с подрядчиками",
+                    "Составление отчетов"
+                ],
+                requirements: [
+                    "Высшее строительное образование",
+                    "Опыт работы от 3 лет",
+                    "Знание СНиП и ГОСТ",
+                    "Ответственность"
+                ],
+                conditions: [
+                    "Официальное трудоустройство",
+                    "Командировки",
+                    "Социальный пакет",
+                    "Карьерный рост"
+                ],
+                skills: ["Строительство", "Проектирование", "Контроль качества"],
+                date: "3 дня назад",
+                views: 47,
+                status: "approved"
+            },
+            {
+                id: 10,
+                title: "Администратор",
+                company: "Фитнес-клуб 'Энерджи'",
+                salary: "от 180 000 ₸",
+                salaryNum: 180000,
+                location: "Костанай",
+                type: "Полная занятость",
+                experience: "без опыта",
+                category: "other",
+                description: "Работа на ресепшене, общение с клиентами, ведение документации.",
+                responsibilities: [
+                    "Встреча и консультирование клиентов",
+                    "Оформление абонементов",
+                    "Ведение кассовой документации",
+                    "Контроль посещаемости"
+                ],
+                requirements: [
+                    "Коммуникабельность",
+                    "Грамотная речь",
+                    "Опыт работы приветствуется",
+                    "Ответственность"
+                ],
+                conditions: [
+                    "Гибкий график",
+                    "Бесплатный абонемент",
+                    "Обучение за счет компании",
+                    "Дружный коллектив"
+                ],
+                skills: ["Работа с клиентами", "Администрирование", "Коммуникация"],
+                date: "Неделю назад",
+                views: 38,
+                status: "rejected"
+            }
+        ];
+
+        // DOM элементы
+        const themeToggle = document.getElementById('themeToggle');
+        const loginBtn = document.getElementById('loginBtn');
+        const registerBtn = document.getElementById('registerBtn');
+        const jobSeekerBtn = document.getElementById('jobSeekerBtn');
+        const employerBtn = document.getElementById('employerBtn');
+        const loginModal = document.getElementById('loginModal');
+        const registerModal = document.getElementById('registerModal');
+        const resumeModal = document.getElementById('resumeModal');
+        const closeLoginModal = document.getElementById('closeLoginModal');
+        const closeRegisterModal = document.getElementById('closeRegisterModal');
+        const closeResumeModal = document.getElementById('closeResumeModal');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const switchToRegister = document.getElementById('switchToRegister');
+        const switchToLogin = document.getElementById('switchToLogin');
+        const searchForm = document.getElementById('searchForm');
+        const employerForm = document.getElementById('employerForm');
+        const searchInput = document.getElementById('searchInput');
+        const categoryFilter = document.getElementById('categoryFilter');
+        const experienceFilter = document.getElementById('experienceFilter');
+        const vacanciesContainer = document.getElementById('vacanciesContainer');
+        const jobSearchSection = document.getElementById('jobSearchSection');
+        const employerSection = document.getElementById('employerSection');
+        const vacanciesSection = document.getElementById('vacanciesSection');
+        const createResumeBtn = document.getElementById('createResumeBtn');
+        const exportResumeBtn = document.getElementById('exportResumeBtn');
+        const resumeForm = document.getElementById('resumeForm');
+        const addExperienceBtn = document.getElementById('addExperience');
+        const experienceItems = document.getElementById('experienceItems');
+        const vacancyCount = document.getElementById('vacancyCount');
+
+        // Инициализация темы
+        function initTheme() {
+            if (localStorage.getItem('theme') === 'dark' || 
+                (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.body.classList.add('dark-theme');
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            }
+        }
+
+        // Переключение темы
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-theme');
+            if (document.body.classList.contains('dark-theme')) {
+                localStorage.setItem('theme', 'dark');
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                localStorage.setItem('theme', 'light');
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            }
+        });
+
+        // Переключение между соискателем и работодателем
+        function toggleUserType(isEmployerMode) {
+            isEmployer = isEmployerMode;
+            
+            if (isEmployerMode) {
+                jobSeekerBtn.classList.remove('active');
+                employerBtn.classList.add('active');
+                jobSearchSection.style.display = 'none';
+                employerSection.style.display = 'block';
+                vacanciesSection.style.display = 'none';
+                createResumeBtn.style.display = 'none';
+            } else {
+                jobSeekerBtn.classList.add('active');
+                employerBtn.classList.remove('active');
+                jobSearchSection.style.display = 'block';
+                employerSection.style.display = 'none';
+                vacanciesSection.style.display = 'block';
+                createResumeBtn.style.display = 'inline-flex';
+            }
+        }
+
+        jobSeekerBtn.addEventListener('click', () => toggleUserType(false));
+        employerBtn.addEventListener('click', () => toggleUserType(true));
+
+        // Модальные окна
+        function setupModals() {
+            // Открытие/закрытие модальных окон
+            loginBtn.addEventListener('click', () => loginModal.style.display = 'block');
+            registerBtn.addEventListener('click', () => registerModal.style.display = 'block');
+            createResumeBtn.addEventListener('click', openResumeModal);
+            
+            closeLoginModal.addEventListener('click', () => loginModal.style.display = 'none');
+            closeRegisterModal.addEventListener('click', () => registerModal.style.display = 'none');
+            closeResumeModal.addEventListener('click', () => resumeModal.style.display = 'none');
+            
+            window.addEventListener('click', (e) => {
+                if (e.target === loginModal) loginModal.style.display = 'none';
+                if (e.target === registerModal) registerModal.style.display = 'none';
+                if (e.target === resumeModal) resumeModal.style.display = 'none';
+            });
+            
+            // Переключение между окнами входа/регистрации
+            switchToRegister.addEventListener('click', (e) => {
+                e.preventDefault();
+                loginModal.style.display = 'none';
+                registerModal.style.display = 'block';
+            });
+            
+            switchToLogin.addEventListener('click', (e) => {
+                e.preventDefault();
+                registerModal.style.display = 'none';
+                loginModal.style.display = 'block';
+            });
+        }
+
+        // Форма входа
+        function setupLoginForm() {
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+                
+                // В реальном приложении здесь будет запрос к серверу
+                currentUser = {
+                    name: "Иван Иванов",
+                    email: email,
+                    phone: "+7 777 123 4567",
+                    type: document.querySelector('input[name="userType"]:checked').value
+                };
+                
+                loginModal.style.display = 'none';
+                updateAuthUI();
+                alert(`Добро пожаловать, ${currentUser.name}!`);
+                
+                // Если пользователь работодатель - переключаем интерфейс
+                if (currentUser.type === 'employer') {
+                    toggleUserType(true);
+                }
+            });
+        }
+
+        // Форма регистрации
+        function setupRegisterForm() {
+            registerForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const name = document.getElementById('registerName').value;
+                const email = document.getElementById('registerEmail').value;
+                const phone = document.getElementById('registerPhone').value;
+                const password = document.getElementById('registerPassword').value;
+                const confirmPassword = document.getElementById('registerConfirmPassword').value;
+                const userType = document.querySelector('input[name="userType"]:checked').value;
+                
+                if (password !== confirmPassword) {
+                    alert('Пароли не совпадают!');
+                    return;
+                }
+                
+                // В реальном приложении здесь будет запрос к серверу
+                currentUser = {
+                    name: name,
+                    email: email,
+                    phone: phone,
+                    type: userType
+                };
+                
+                registerModal.style.display = 'none';
+                updateAuthUI();
+                alert(`Регистрация успешна, ${currentUser.name}!`);
+                
+                // Если пользователь работодатель - переключаем интерфейс
+                if (currentUser.type === 'employer') {
+                    toggleUserType(true);
+                }
+            });
+        }
+
+        // Форма работодателя
+        function setupEmployerForm() {
+            employerForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                if (!currentUser) {
+                    alert('Для размещения вакансии необходимо войти в систему');
+                    loginModal.style.display = 'block';
+                    return;
+                }
+                
+                const jobTitle = document.getElementById('jobTitle').value;
+                const jobDescription = document.getElementById('jobDescription').value;
+                const jobSalary = document.getElementById('jobSalary').value;
+                const jobCategory = document.getElementById('jobCategory').value;
+                
+                // В реальном приложении здесь будет отправка данных на сервер
+                const newVacancy = {
+                    id: vacanciesData.length + 1,
+                    title: jobTitle,
+                    company: currentUser.name,
+                    salary: jobSalary,
+                    salaryNum: parseInt(jobSalary.replace(/\D/g, '')) || 0,
+                    location: "Костанай",
+                    type: "Полная занятость",
+                    experience: "1-3 года",
+                    category: jobCategory,
+                    description: jobDescription,
+                    responsibilities: [],
+                    requirements: [],
+                    conditions: [],
+                    skills: [],
+                    date: "Только что",
+                    views: 0,
+                    status: "pending" // На модерации
+                };
+                
+                vacanciesData.unshift(newVacancy);
+                searchVacancies();
+                
+                // Очищаем форму
+                employerForm.reset();
+                
+                alert('Вакансия отправлена на модерацию! После проверки она будет опубликована.');
+            });
+        }
+
+        // Обновление UI после авторизации
+        function updateAuthUI() {
+            if (currentUser) {
+                loginBtn.innerHTML = `<i class="fas fa-user"></i> ${currentUser.name}`;
+                registerBtn.style.display = 'none';
+                
+                // Показываем соответствующие элементы для типа пользователя
+                if (currentUser.type === 'employer') {
+                    createResumeBtn.style.display = 'none';
+                } else {
+                    createResumeBtn.style.display = 'inline-flex';
+                }
+            } else {
+                loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Вход';
+                registerBtn.style.display = 'inline-flex';
+            }
+        }
+
+        // Отображение вакансий
+        function displayVacancies(vacancies) {
+            vacanciesContainer.innerHTML = '';
+            
+            // Фильтруем только одобренные вакансии
+            const approvedVacancies = vacancies.filter(v => v.status === "approved");
+            
+            if (approvedVacancies.length === 0) {
+                vacanciesContainer.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: var(--secondary-color);">
+                        <i class="fas fa-search" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                        <p>По вашему запросу ничего не найдено</p>
+                    </div>
+                `;
+                vacancyCount.textContent = "Найдено 0 вакансий";
+                return;
+            }
+            
+            vacancyCount.textContent = `Найдено ${approvedVacancies.length} вакансий`;
+            
+            approvedVacancies.forEach((vacancy, index) => {
+                const vacancyElement = document.createElement('div');
+                vacancyElement.className = `vacancy-card`;
+                
+                let skillsHtml = '';
+                if (vacancy.skills && vacancy.skills.length > 0) {
+                    skillsHtml = `
+                        <div style="margin-top: 1rem;">
+                            <div style="font-size: 0.85rem; color: var(--secondary-color); margin-bottom: 0.3rem;">Ключевые навыки:</div>
+                            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                                ${vacancy.skills.map(skill => `<span style="background-color: var(--primary-light); color: var(--primary-color); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem;">${skill}</span>`).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // Создаем HTML для деталей вакансии
+                const detailsHtml = `
+                    <div class="vacancy-details" id="details-${vacancy.id}">
+                        <div class="details-section">
+                            <h4>Обязанности:</h4>
+                            <ul class="details-list">
+                                ${vacancy.responsibilities.map(resp => `<li>${resp}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div class="details-section">
+                            <h4>Требования:</h4>
+                            <ul class="details-list">
+                                ${vacancy.requirements.map(req => `<li>${req}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div class="details-section">
+                            <h4>Условия:</h4>
+                            <ul class="details-list">
+                                ${vacancy.conditions.map(cond => `<li>${cond}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                    <button class="toggle-details" data-id="${vacancy.id}">
+                        <i class="fas fa-chevron-down"></i>
+                        Показать подробности
+                    </button>
+                `;
+                
+                vacancyElement.innerHTML = `
+                    <h3 class="vacancy-title">${vacancy.title}</h3>
+                    <div class="company">
+                        <i class="fas fa-building"></i>
+                        ${vacancy.company}
+                    </div>
+                    <div class="vacancy-meta">
+                        <div class="vacancy-meta-item salary">
+                            <i class="fas fa-money-bill-wave"></i>
+                            ${vacancy.salary}
+                        </div>
+                        <div class="vacancy-meta-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            ${vacancy.location}
+                        </div>
+                        <div class="vacancy-meta-item">
+                            <i class="fas fa-briefcase"></i>
+                            ${vacancy.experience}
+                        </div>
+                    </div>
+                    <div class="vacancy-description">
+                        ${vacancy.description}
+                    </div>
+                    ${skillsHtml}
+                    <div class="vacancy-actions">
+                        <div class="vacancy-date">
+                            <i class="far fa-clock"></i> ${vacancy.date} · <i class="far fa-eye"></i> ${vacancy.views}
+                        </div>
+                        <button class="btn btn-primary apply-btn" data-id="${vacancy.id}" ${!currentUser ? 'disabled' : ''}>
+                            <i class="fas fa-paper-plane"></i>
+                            Откликнуться
+                        </button>
+                    </div>
+                    ${detailsHtml}
+                `;
+                
+                vacanciesContainer.appendChild(vacancyElement);
+                
+                // Обработчик для кнопки "Откликнуться"
+                vacancyElement.querySelector('.apply-btn').addEventListener('click', function() {
+                    if (!currentUser) {
+                        alert('Для отклика на вакансию необходимо войти в систему');
+                        loginModal.style.display = 'block';
+                        return;
+                    }
+                    
+                    const vacancyId = this.getAttribute('data-id');
+                    const vacancy = vacancies.find(v => v.id == vacancyId);
+                    
+                    // В реальном приложении здесь будет отправка отклика
+                    alert(`${currentUser.name}, вы откликнулись на вакансию "${vacancy.title}" в компании ${vacancy.company}`);
+                    
+                    // Отправка уведомления на email (в реальном приложении)
+                    console.log(`Отправлено уведомление на email ${currentUser.email} о отклике на вакансию`);
+                });
+                
+                // Обработчик для кнопки показа/скрытия деталей
+                const toggleBtn = vacancyElement.querySelector('.toggle-details');
+                toggleBtn.addEventListener('click', function() {
+                    const detailsId = this.getAttribute('data-id');
+                    const details = document.getElementById(`details-${detailsId}`);
+                    details.classList.toggle('show');
+                    this.classList.toggle('active');
+                    
+                    if (details.classList.contains('show')) {
+                        this.innerHTML = '<i class="fas fa-chevron-up"></i> Скрыть подробности';
+                    } else {
+                        this.innerHTML = '<i class="fas fa-chevron-down"></i> Показать подробности';
+                    }
+                });
+            });
+        }
+
+        // Поиск вакансий
+        function searchVacancies() {
+            const query = searchInput.value.toLowerCase();
+            const category = categoryFilter.value;
+            const experience = experienceFilter.value;
+            
+            let filtered = vacanciesData;
+            
+            // Фильтр по категории
+            if (category) {
+                filtered = filtered.filter(v => v.category === category);
+            }
+            
+            // Фильтр по опыту
+            if (experience !== 'any') {
+                if (experience === 'noexp') {
+                    filtered = filtered.filter(v => v.experience === "без опыта");
+                } else if (experience === '1-3') {
+                    filtered = filtered.filter(v => v.experience === "1-3 года");
+                } else if (experience === '3+') {
+                    filtered = filtered.filter(v => v.experience === "3+ года");
+                }
+            }
+            
+            // Фильтр по тексту поиска
+            if (query) {
+                filtered = filtered.filter(v => 
+                    v.title.toLowerCase().includes(query) || 
+                    v.company.toLowerCase().includes(query) ||
+                    (v.description && v.description.toLowerCase().includes(query)) ||
+                    (v.skills && v.skills.some(skill => skill.toLowerCase().includes(query)))
+                );
+            }
+            
+            displayVacancies(filtered);
+        }
+
+        // Форма создания резюме
+        function setupResumeForm() {
+            // Добавление места работы
+            addExperienceBtn.addEventListener('click', function() {
+                const newItem = document.createElement('div');
+                newItem.className = 'form-group';
+                newItem.innerHTML = `
+                    <label class="form-label">Должность</label>
+                    <input type="text" class="form-control" name="expPosition[]"><br>
+                    <label class="form-label">Компания</label>
+                    <input type="text" class="form-control" name="expCompany[]"><br>
+                    <label class="form-label">Период работы</label>
+                    <input type="text" class="form-control" name="expPeriod[]" placeholder="Пример: 2018-2022"><br>
+                    <label class="form-label">Обязанности и достижения</label>
+                    <textarea class="form-control" name="expDescription[]" rows="3"></textarea>
+                    <button type="button" class="btn btn-outline remove-exp" style="margin-top: 0.5rem;">
+                        <i class="fas fa-trash"></i>
+                        Удалить
+                    </button>
+                    <hr>
+                `;
+                experienceItems.appendChild(newItem);
+                
+                // Обработчик для кнопки удаления
+                newItem.querySelector('.remove-exp').addEventListener('click', function() {
+                    newItem.remove();
+                });
+            });
+            
+            // Сохранение резюме
+            resumeForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Собираем данные
+                currentResume.personal = {
+                    name: document.getElementById('resumeName').value,
+                    title: document.getElementById('resumeTitle').value,
+                    phone: document.getElementById('resumePhone').value,
+                    email: document.getElementById('resumeEmail').value,
+                    city: document.getElementById('resumeCity').value,
+                    about: document.getElementById('resumeAbout').value
+                };
+                
+                currentResume.experience = [];
+                document.querySelectorAll('[name="expPosition[]"]').forEach((item, index) => {
+                    currentResume.experience.push({
+                        position: item.value,
+                        company: document.querySelectorAll('[name="expCompany[]"]')[index].value,
+                        period: document.querySelectorAll('[name="expPeriod[]"]')[index].value,
+                        description: document.querySelectorAll('[name="expDescription[]"]')[index].value
+                    });
+                });
+                
+                currentResume.education = {
+                    institution: document.getElementById('educationInstitution').value,
+                    specialty: document.getElementById('educationSpecialty').value,
+                    year: document.getElementById('educationYear').value
+                };
+                
+                currentResume.skills = document.getElementById('resumeSkills').value;
+                
+                // Закрываем модальное окно
+                resumeModal.style.display = 'none';
+                
+                // Показываем кнопку экспорта
+                exportResumeBtn.style.display = 'inline-block';
+                
+                alert('Резюме успешно сохранено!');
+            });
+        }
+
+        // Экспорт резюме в PDF
+        function setupResumeExport() {
+            exportResumeBtn.addEventListener('click', function() {
+                const { personal, experience, education, skills } = currentResume;
+                const pdf = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+                
+                // Заголовок
+                pdf.setFontSize(20);
+                pdf.setTextColor(74, 111, 165);
+                pdf.text(personal.name, 105, 20, { align: 'center' });
+                
+                pdf.setFontSize(16);
+                pdf.setTextColor(107, 140, 158);
+                pdf.text(personal.title, 105, 27, { align: 'center' });
+                
+                // Контакты
+                pdf.setFontSize(12);
+                pdf.setTextColor(0, 0, 0);
+                
+                let y = 40;
+                if (personal.phone) {
+                    pdf.text(`Телефон: ${personal.phone}`, 20, y);
+                    y += 7;
+                }
+                if (personal.email) {
+                    pdf.text(`Email: ${personal.email}`, 20, y);
+                    y += 7;
+                }
+                if (personal.city) {
+                    pdf.text(`Город: ${personal.city}`, 20, y);
+                    y += 10;
+                } else {
+                    y += 3;
+                }
+                
+                // О себе
+                if (personal.about) {
+                    pdf.setFontSize(14);
+                    pdf.setTextColor(74, 111, 165);
+                    pdf.text("О себе", 20, y);
+                    pdf.setDrawColor(74, 111, 165);
+                    pdf.line(20, y + 2, 30, y + 2);
+                    
+                    pdf.setFontSize(11);
+                    pdf.setTextColor(0, 0, 0);
+                    const aboutLines = pdf.splitTextToSize(personal.about, 170);
+                    pdf.text(aboutLines, 20, y + 10);
+                    y += 10 + (aboutLines.length * 6);
+                }
+                
+                // Опыт работы
+                if (experience.length > 0) {
+                    pdf.setFontSize(14);
+                    pdf.setTextColor(74, 111, 165);
+                    pdf.text("Опыт работы", 20, y);
+                    pdf.line(20, y + 2, 40, y + 2);
+                    y += 10;
+                    
+                    pdf.setFontSize(11);
+                    experience.forEach(exp => {
+                        if (exp.position) {
+                            pdf.setFont(undefined, 'bold');
+                            pdf.setTextColor(74, 111, 165);
+                            pdf.text(exp.position, 20, y);
+                            
+                            pdf.setFont(undefined, 'normal');
+                            pdf.setTextColor(107, 140, 158);
+                            let expLine = exp.company;
+                            if (exp.period) expLine += ` | ${exp.period}`;
+                            pdf.text(expLine, 20, y + 6);
+                            
+                            if (exp.description) {
+                                pdf.setTextColor(0, 0, 0);
+                                const descLines = pdf.splitTextToSize(exp.description, 170);
+                                pdf.text(descLines, 20, y + 12);
+                                y += 12 + (descLines.length * 6);
+                            } else {
+                                y += 12;
+                            }
+                            y += 5;
+                        }
+                    });
+                }
+                
+                // Образование
+                if (education.institution) {
+                    pdf.setFontSize(14);
+                    pdf.setTextColor(74, 111, 165);
+                    pdf.text("Образование", 20, y);
+                    pdf.line(20, y + 2, 40, y + 2);
+                    y += 10;
+                    
+                    pdf.setFontSize(11);
+                    pdf.setFont(undefined, 'bold');
+                    pdf.setTextColor(74, 111, 165);
+                    pdf.text(education.institution, 20, y);
+                    
+                    pdf.setFont(undefined, 'normal');
+                    pdf.setTextColor(107, 140, 158);
+                    let eduLine = education.specialty;
+                    if (education.year) eduLine += ` (${education.year})`;
+                    pdf.text(eduLine, 20, y + 6);
+                    y += 15;
+                }
+                
+                // Навыки
+                if (skills) {
+                    pdf.setFontSize(14);
+                    pdf.setTextColor(74, 111, 165);
+                    pdf.text("Навыки", 20, y);
+                    pdf.line(20, y + 2, 30, y + 2);
+                    y += 10;
+                    
+                    pdf.setFontSize(11);
+                    pdf.setTextColor(0, 0, 0);
+                    const skillsLines = pdf.splitTextToSize(skills, 170);
+                    pdf.text(skillsLines, 20, y + 5);
+                }
+                
+                // Сохраняем PDF
+                pdf.save('резюме.pdf');
+            });
+        }
+
+        // Открытие формы резюме
+        function openResumeModal() {
+            if (!currentUser) {
+                alert('Для создания резюме необходимо войти в систему');
+                loginModal.style.display = 'block';
+                return;
+            }
+            
+            // Заполняем данные пользователя, если они есть
+            if (currentUser) {
+                document.getElementById('resumeName').value = currentUser.name || '';
+                document.getElementById('resumePhone').value = currentUser.phone || '';
+                document.getElementById('resumeEmail').value = currentUser.email || '';
+            }
+            
+            // Очищаем другие поля
+            document.getElementById('resumeTitle').value = '';
+            document.getElementById('resumeCity').value = 'Костанай';
+            document.getElementById('resumeAbout').value = '';
+            document.getElementById('educationInstitution').value = '';
+            document.getElementById('educationSpecialty').value = '';
+            document.getElementById('educationYear').value = '';
+            document.getElementById('resumeSkills').value = '';
+            
+            // Очищаем опыт работы
+            experienceItems.innerHTML = `
+                <div class="form-group">
+                    <label class="form-label">Должность</label>
+                    <input type="text" class="form-control" name="expPosition[]"><br>
+                    <label class="form-label">Компания</label>
+                    <input type="text" class="form-control" name="expCompany[]"><br>
+                    <label class="form-label">Период работы</label>
+                    <input type="text" class="form-control" name="expPeriod[]" placeholder="Пример: 2018-2022"><br>
+                    <label class="form-label">Обязанности и достижения</label>
+                    <textarea class="form-control" name="expDescription[]" rows="3"></textarea>
+                </div>
+            `;
+            
+            resumeModal.style.display = 'block';
+        }
+
+        // Инициализация приложения
+        function init() {
+            initTheme();
+            setupModals();
+            setupLoginForm();
+            setupRegisterForm();
+            setupEmployerForm();
+            setupResumeForm();
+            setupResumeExport();
+            
+            // Поиск вакансий
+            searchForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                searchVacancies();
+            });
+            
+            // Загрузка всех вакансий при старте
+            searchVacancies();
+        }
+
+        // Запуск приложения
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html> 
